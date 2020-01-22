@@ -1,0 +1,446 @@
+﻿// Public Variables
+var final_date_var;
+var this_line_final_date;
+var pauseDate;
+var pause;
+var sumOfHours = 0;
+var isChanged = false;
+var isPressedOnce = false;
+var isFinished = false;
+var rows_in_edit_table;
+var rows_of_display_window;
+var nowDate;
+var thisHour;
+var bonusTime;
+var totalTime;
+var timeTable = [];
+var timeSum = 0;
+var id;
+
+var JsonMeetings = {};
+
+
+//END Public Variables
+function timer_time(time) {
+    this.time = time;
+}
+//Build timeTable
+function Build_timeTable() {
+    var hours = $('td .hour');
+    hours.each(function (e) {
+        if ($(this).val() != "") {
+            var time = parseInt($(this).val());
+            timeTable[e] = new timer_time(time);
+            timeTable[e].workTime = 0;
+        } 
+    });
+}
+
+
+// UI: Edit Screen Scripts
+function Timer() {
+    $('.hour').keypress(function (event) { // Filter Timer Input for Just Numbers
+        var code = (event.keyCode ? event.keyCode : event.which);
+        if (!(code >= 48 && code <= 57)) {
+            event.preventDefault();
+        }
+            
+    });
+    
+    $('.fa-trash-o').on("click", function () {
+        if ($(this).closest("#pre_timer").find("tr").length > 2) {
+            var curTr = $(this).parent().parent()
+            isChanged = true;
+
+            // Delete the row from the Json in the Local Storage.
+            var curStorageJson = JSON.parse(localStorage.getItem("JsonMeetings"));
+            if (curStorageJson[curTr.find(".subject").val()] != undefined) {
+                delete curStorageJson[curTr.find(".subject").val()];
+                localStorage.setItem('JsonMeetings', JSON.stringify(curStorageJson));
+            }
+            // Remove row from UI. 
+            curTr.remove();
+        }
+    });
+}
+
+function AddRowsFromLastSession() {     //Add Rows to the Form from the Last Session
+    // get the number of meetings from the Local Storage
+	if (localStorage.getItem("JsonMeetings") == null) { return; }
+    var meetingCacheNum = Object.keys(JSON.parse(localStorage.getItem("JsonMeetings"))).length - 1; //-1 coz of the 
+    if (meetingCacheNum > 5) {
+        for (var i = 0; i < meetingCacheNum - 5; i++) {
+            $("#pre_timer tr:last").after('<tr><td><i class="fa fa-trash-o" aria-hidden="true"></i></td> \
+                <td><input type="text" class="form-control present"></td> \
+                <td><input type="text" class="form-control subject"></td> \
+                <td><input type="text" class="form-control hour"></td></tr>');
+        }
+    }
+}
+
+function AutoSave() { //Auto Save
+    var counter = 0;
+    var meetingCache = JSON.parse(localStorage.getItem("JsonMeetings"));
+    for (var temp in meetingCache) {
+        $(".subject:eq(" + counter + ")").val(temp);
+        if(counter != 0){
+            $(".hour:eq(" + (counter - 1) + ")").val(meetingCache[temp]);
+        }
+        counter++;
+    }
+}
+function AddButton() { //Add Button Functionality
+    $('.add').click(function () {
+        isChanged = true;
+        $("#pre_timer tr:last").after('<tr><td><i class="fa fa-trash-o" aria-hidden="true"></i></td> \
+                <td><input type="text" class="form-control present"></td> \
+                <td><input type="text" class="form-control subject"></td> \
+                <td><input type="text" class="form-control hour"></td></tr>');
+        Timer();
+    });
+}
+function CleanButton() { //Clean Button Functionality
+    $('.clean').click(function () {
+        isChanged = true;
+        $('.timer_form')[0].reset();
+        $(".meeting_title").find(".mainSubject").val("");
+        localStorage.clear();
+    });
+}
+
+// END UI: Edit Screen Scripts
+
+
+
+// UI: Timer Scripts
+
+function PlayButton() {
+    //יצירה של עיגול טיימר ריק
+    $('.play').click(function () {
+        var missingInputFlag = false;
+        if ($(".mainSubject").val() == "") {
+            $(".meeting_title").find(".mainSubject").css("background-color", "lightcoral");
+        } else {
+            $(".mainSubject").css("background-color", "white");
+            JsonMeetings["נושא הישיבה"] = $(".mainSubject").val();
+        }
+        $('tr').each(function (e) {
+            var curPresent = $(this).find('td').find('.present');
+            var curSubject = $(this).find('td').find('.subject');
+            var curTime = $(this).find('td').find('.hour');
+            var presentValue = curPresent.val();
+            var subjectValue = curSubject.val();
+            var timeValue = curTime.val();
+            //Main Subject Value
+            if (curSubject.val() == undefined) {
+                return
+            }
+            //If one of the values is missing color the input box.
+            if (subjectValue == "" && timeValue != "" ) {
+                missingInputFlag = true;
+                curSubject[0].style["background-color"] = "lightcoral";
+            } else {
+                curSubject[0].style["background-color"] = "white";
+            }
+          
+            
+            // Add to the json of meetings.
+            if (subjectValue != "" && timeValue != "") {
+                JsonMeetings[subjectValue] = timeValue;
+            }
+
+        });
+        if (missingInputFlag) {
+            JsonMeetings = {};
+            return;
+        }
+        localStorage.setItem("JsonMeetings", JSON.stringify(JsonMeetings));
+        Build_timeTable();
+        for (var i = 0; i < timeTable.length; i++) {
+            if (timeTable[i] != undefined) {
+                timeSum += timeTable[i].time;
+
+            }
+        }
+        $('#circle').circleProgress({
+            value: 1,
+            size: 400,
+            lineCap: 'round',
+            thickness: 50,
+            startAngle: -Math.PI / 2,
+            fill: {
+                gradient: ["red", "#f17406"],
+            }
+        });
+        //סוף יצירת העיגול
+
+        var numberOfRows = 0;
+        //יצירת שורות האירועים וכפתור ההורדה
+        rows_in_edit_table = $('#pre_timer tbody tr');
+        rows_of_display_window = $('#real_time_timer .subjects');
+        if (!isPressedOnce || isChanged || isFinished) {
+            sumOfHours = 0;
+            if ($('td .hour:eq(0)').val().length > 0) {
+                rows_of_display_window.empty();
+                rows_in_edit_table.each(function () {
+                    if ($(this).find('.subject').val().length > 0 && $(this).find('.hour').val().length > 0) {
+                        rows_of_display_window.append('<li>' + $(this).find('.present').val() + ' - ' + $(this).find('.subject').val() + '</li>');
+                        sumOfHours += parseInt($(this).find('.hour').val());
+                        numberOfRows += 1;
+                    }
+                });
+                //סיום יצירת שורת האירועים וכפתור ההורדה
+
+
+
+                //שורת הטיימר הכללית למטה
+                sumOfHours = sumOfHours * 60 * 1000; //Convert Sum of Hours to Milliseconds
+                final_date_var = new Date().getTime() + sumOfHours;
+                $('#timer').countdown(final_date_var, { elapse: true })
+                    .on('update.countdown', function (event) {
+                        if (event.elapsed) {
+                            isFinished = true;
+                            $(this).html(event.strftime('<span style="color:#ff4345">חריגה: </span><span style="color:#ff4345">%H:%M:%S</span>'));
+                        }
+                        else {
+                            $(this).html(event.strftime('<span>זמן פגישה כולל </span><span>%H:%M:%S</span>'));
+                        }
+                    });
+                //סוף שורת הטיימר הכללית למטה
+
+
+                id = 0;
+                var this_line = $('li:eq(' + id + ')');
+                //var this_line = $(this).find('.present').val();
+                var this_line_hour = timeTable[id].time;
+                this_line.next().next().nextAll().hide();
+                thisHour = this_line_hour * 60 * 1000;
+                this_line_final_date =  new Date().getTime() + thisHour;  //
+
+                nowDate = new Date().getTime();
+               // this_line.css('font-size', '5pt'); // מגדיל את השורה עם האירוע הנוכחי
+
+
+                function TimerStart() { // The Main Script - Timer That Calls Itself When an Event is Ending
+                    //Stopping Criterion: If the Item is the Last
+
+
+                    staticNowDate = new Date().getTime(); // Starting time. 
+
+                    if (id < numberOfRows) {
+                        $(".hariga").hide();
+                        if (id > 0) {
+                            id = id - 1;
+                            $('li:eq(' + id + ')').css('font-size', '40pt');
+                            id = id + 1;
+                            $('li:eq(' + id + ')').prev().prevAll().hide();
+                            $('li:eq(' + id + ')').next().show();
+                        }
+                        totalTime = thisHour;
+                        $('#circle').circleProgress({
+                            animationStartValue: 0,
+                            animation: {
+                                duration: totalTime,
+                                easing: "linear"
+                            }
+                        });
+                        // $('li:eq(' + id + ')').css('font-size', '31pt');
+                        $('li:eq(' + id + ')').css('font-weight', '500');
+                        var harigaIndex = 0
+                        $('#timer2').countdown(this_line_final_date, { elapse: true })
+                            .on('update.countdown', function (event) {
+                                if (event.elapsed) {
+                                    isFinished = true;
+                                    if (harigaIndex % 2 == 0) {
+                                        $(".hariga").show();
+                                    } else {
+                                        $(".hariga").hide();
+                                    }
+                                    harigaIndex++;
+                                    nowDate = new Date().getTime();
+                                    timeTable[id].pdivision = this_line_final_date - nowDate;
+                                    $(this).html(event.strftime('<div style="color:#ff4345"><span>%M</span><span> דקות</span><br /><span>%S</span><span> שניות</span></div>'));
+                                }
+                                else {
+                                    $(this).html(event.strftime('<span>%M</span><span> דקות</span><br /><span>%S</span><span> שניות</span>'));
+                                    nowDate = new Date().getTime();
+                                    timeTable[id].pdivision = this_line_final_date - nowDate;
+                                }
+                            });
+
+                    }
+                }
+                TimerStart();
+                $('.skip').click(function () {
+                    if (id != numberOfRows - 1) {
+                        timeTable[id + 1].time += timeTable[id].pdivision / (60 * 1000);
+                        id++;
+                        thisHour = Math.round(timeTable[id].time * 60 * 1000); // how much milisecconds the next subject.
+                        console.log(thisHour);
+                        this_line_final_date =   thisHour + nowDate;
+                        TimerStart();
+                    }
+
+                });
+                var title_value = $('.meeting_title input').val();
+                if (title_value.length > 0) {
+                    $('.timer_title').text($('.meeting_title input').val());
+                }
+                $('.table_wrapper').hide();
+                $('.meeting_title').hide();
+                $('#real_time_timer').show();
+                isPressedOnce = true;
+            }
+        }
+        else {
+            var timedelta = new Date().getTime() - pauseDate.getTime();
+            final_date_var = new Date(final_date_var + timedelta).getTime();
+            this_line_final_date = new Date(this_line_final_date + timedelta).getTime();
+            $('#timer').countdown(final_date_var);
+            $('#timer2').countdown(this_line_final_date);
+            $('.table_wrapper').hide();
+            $('#real_time_timer').show();
+        }
+    });
+}
+function ToggleButton() {
+    pause = true;
+    var circle = $('#circle');
+    $('.toggle').click(function () {
+        if (pause == true) {
+            $('.skip').hide();
+            pauseDate = new Date();
+            $(circle.circleProgress('widget')).stop();
+            $('#timer').countdown('pause');
+            $('#timer2').countdown('pause');
+            $('.toggle').html('השהה<i class="fa fa-play-circle play-icon" aria-hidden="true"></i>');
+            pause = false;
+        }
+        else {
+            var temp = pauseDate.getTime(); // Time hold button was pressed
+
+            timeTable[id].workTime += (temp - staticNowDate);
+            var timeleft = timeTable[id].workTime / thisHour;
+
+
+            var temp2 = thisHour - timeTable[id].workTime; // time left for this subject.
+
+            $('#circle').circleProgress({
+                animationStartValue: timeleft,
+                animation: {
+                    duration: temp2,
+                    easing: "linear"
+                }
+            });
+            staticNowDate = new Date().getTime();
+            var timedelta = new Date().getTime() - pauseDate.getTime();
+            final_date_var = new Date(final_date_var + timedelta).getTime();
+            this_line_final_date = new Date(this_line_final_date + timedelta).getTime();  //  
+            $('#timer').countdown(final_date_var);
+            $('#timer2').countdown(this_line_final_date);
+            $('.toggle').html('השהה<i class="fa fa-pause-circle toggle-icon" aria-hidden="true"></i>');
+            pause = true;
+            $('.skip').show();
+        }
+    });
+}
+function BackButton() {
+    $('.back').click(function () {
+        location.reload();
+    });
+}
+// END UI: Timer Scripts
+
+
+// Function for zNet picture. 
+function znetPage() {
+    $('.znet').click(function () {
+        window.open('https://portal.army.idf/sites/pakar_tikshuv/mate/%D7%AA%D7%A7%D7%A9%D7%95%D7%91%20%D7%95%D7%94%D7%AA%D7%A8%D7%A2%D7%94/_layouts/15/start.aspx#/');
+    });
+    var onZnet = function () { $(this).animate({ width: '200px' }, 300) };
+    var offZnet = function () { $(this).animate({ width: '200px' }, 300) };
+
+}
+
+
+// Function for agat picture. 
+function AgatPage() {
+    $('.agats').click(function () {
+        window.open('https://portal.army.idf/sites/pakar_pakar/_layouts/15/start.aspx#/default.aspx');
+    });
+    var onZnet = function () { $(this).animate({ width: '200px' }, 300) };
+    var offZnet = function () { $(this).animate({ width: '200px' }, 300) };
+
+}
+
+
+function isIE() {
+
+    var sAgent = window.navigator.userAgent;
+    var idx = sAgent.indexOf("MSIE");
+    if (idx > 0) //IE older than 11
+        return true;
+    else if (!!navigator.userAgent.match(/Trident\/7\./)) //IE 11
+        return true;
+    else
+        return false;
+}
+
+function IError() {
+
+    document.body.innerHTML = "<center style=\"padding:40px\"><div style=\"align-self:center; font-family:arial; font-size:40px\">אתר זה אינו נתמך בדפדפן אקספלורר, אנא השתמשו בדפדפן כרום</div><img src=\"https://portal.army.idf/siteassets/chrome.png\"/></center>";
+    document.head.innerHTML = "";
+
+}
+
+
+function checkSyntax(i) {
+    return (i < 10) ? "0" + i : i;
+}
+
+function getTimeNow() {
+    var date = new Date();
+    var hours = checkSyntax(date.getHours());
+    var minuts = checkSyntax(date.getMinutes());
+    var seconds = checkSyntax(date.getSeconds());
+    var curTime = $(".curTime");
+    curTime.text(hours + ":" + minuts + ":" + seconds);
+}
+
+
+function showHideHariga() {
+    $(".hariga").hide();
+    $(".hariga").show();
+}
+
+
+$(function () {
+
+    //Edit Page
+    if (isIE()) {
+        IError();
+    }
+    else {
+        AddRowsFromLastSession();
+        AutoSave();
+        Timer();
+        AddButton();
+        CleanButton();
+        PlayButton();
+        ToggleButton();
+        //Edit Page END
+
+        //Play Page
+        BackButton();
+       // znetPage();
+        AgatPage();
+
+        window.setInterval(function () { getTimeNow(); }, 500);
+        //FullScreenButton();
+        //DownloadButton();
+        //Play Page END
+    }
+
+});
+
+
