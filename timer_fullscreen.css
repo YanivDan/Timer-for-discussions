@@ -1,0 +1,229 @@
+body {
+  font-size: 20px !important;
+  line-height: 1.42857143;
+  color: #333;
+  background-color: #fff;
+}
+@font-face
+{
+	font-family: 'Open Sans Hebrew'; 
+	src: url("OpenSansHebrew-Regular.ttf");
+}
+@font-face
+{
+	font-family: 'Open Sans Hebrew'; 
+	src: url("OpenSansHebrew-Bold.ttf");
+	font-weight: 400;
+}
+@font-face
+{
+	font-family: 'Open Sans Hebrew'; 
+	src: url("OpenSansHebrew-Light.ttf");
+	font-weight: 100;
+}
+.timer{
+    width: 100%;
+    height: 100%;
+    box-shadow: inset 0 0 0 500px rgba(40, 38, 50, 0.7);
+    background: url("reka3.png") no-repeat;
+    direction: rtl;
+    color: #F6F6F6;
+    font-family: 'Open Sans Hebrew', sans-serif;
+    padding: 32px;
+    position: absolute;
+    background-size: cover;
+}
+
+
+.meeting_title{
+    width: 40%;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 16px;
+    margin-bottom: 16px;
+    padding-right: 60px;
+    font-weight: 600;
+}
+
+.timer table th{
+    text-align: right;
+}
+#table_wrapper{
+    position: relative;
+}
+.timer_form {
+    height: 320px;
+    overflow:auto;
+    margin-right: 5%;
+}
+.timer_title{
+    font-size: 60pt;
+    font-weight: 600;
+    text-align: center;
+    padding-top: 75px;
+}
+.hariga{
+	color: #23262c;
+	left: 210px;
+	position: absolute;
+	font-size: 24pt;
+	font-weight: 600;
+	background-color: #ff4345;
+	top: 507px;
+	padding: 0 5px 0 5px;
+}
+.hour{
+    width: 196px !important;
+    text-align: center;
+}
+td .fa-trash-o {
+    background-image:url("semelPik.png");
+    font-size: 16pt;
+}
+.timer td, .timer th{
+    padding: 5px;
+}
+.timer table
+{
+    margin-right: auto;
+    margin-left: auto;
+    /* width: 1400px; */
+}
+td .form-control{
+    top: 250px
+    padding: 1rem 0.75rem;
+    font-size: 18pt;
+    border-radius: 30px;
+}
+td .button{
+    height: 30px;
+}
+.toggle{
+	margin-right: 16px;
+}
+.timer_button
+{
+    height: 48px;
+    text-align: center;
+    margin-top: 19px;
+    /* margin-right: 90px; */
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    font-size: 15pt;
+
+    user-select: none;
+    cursor: pointer;
+    float: right;
+    padding: 0 8px 0 8px;
+    background-color: white;
+    color: #242932;
+    border-radius: 25px;
+}
+
+#timer_button_play 
+{
+    background-color: darkseagreen;
+}
+
+#timer_button_clean 
+{
+    background-color: indianred;
+}
+
+div .fa-plus-circle, div .fa-play-circle, div .fa-pause-circle, div .fa-file-powerpoint-o{
+    font-size: 30pt;
+    padding-left: 6px;
+    padding-top: 1px;
+}
+div .fa-stop-circle, div .fa-arrow-circle-right, div .fa-arrow-circle-left
+{
+    font-size: 28pt;
+    padding-left: 7px;
+    padding-top: 1px;
+}
+.button_panel{
+    top: 80%;
+    width: 75%;
+    padding: 60px 245px 0px 0px;
+    position: absolute;
+    right: 20%;
+}
+
+.left_panel{
+    float: left;
+}
+
+.timer_subjects{
+    width: 730px;
+    position: absolute;
+    top: 250px;
+    right: 150px;
+    font-size: 20pt;
+}
+.running_timer{
+    display: inline-block;
+    font-size: 20pt;
+    margin-right: -30px;
+}
+#timer2{
+    position: absolute;
+    top: 345px;
+    left: 160px;
+    font-size: 35pt;
+}
+#timer{
+    position: absolute;
+    margin-left: auto;
+    margin-right: auto;
+    font-weight: 450;
+    font-size: 40pt;
+    text-align: center;
+    top: 75%;
+}
+#circle canvas{
+    position: absolute;
+    top: 254px;
+    left: 50px;
+}
+.agats{
+	background-image: url("semTikWr.png");
+	background-size: 120px;
+    width: 120px;
+    position: absolute;
+    height: 135px;
+    top: 5px;
+    left: 5px;
+}
+.znet {
+	
+	background-image: url("Rights.png");
+	background-size: 215px;
+	width: 210px;
+	position: absolute;
+	height: 30px;
+	top: 10px;
+    right: 0px;
+}
+
+.curTime {
+    position: absolute;
+    height: 50px;
+    top: 0px;
+    right: 47%;
+    font-weight: 400;
+    font-size: 140%;
+}
+
+
+.skip-icon {
+    padding-right: 8%;
+}
+
+.toggle-icon{
+    padding-right: 8%;
+}
+
+.play-icon{
+    padding-right: 8%;
+}

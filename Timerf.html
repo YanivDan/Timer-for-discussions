@@ -1,0 +1,150 @@
+﻿<!DOCTYPE html>
+<!-- saved from url=(0061)https://spsv.army.idf/sites/clock/timer/timer_fullscreen.aspx -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        
+        <title>Timer</title>
+        <script src="./Timerf_files/jquery-1.8.1.min.js.הורד"></script>
+        <link rel="stylesheet" href="./Timerf_files/timer_fullscreen.css">
+        <link rel="stylesheet" href="./Timerf_files/bootstrap.css">
+        <link rel="stylesheet" href="./Timerf_files/font-awesome.css">
+        <script src="./Timerf_files/timer_fullscreen.js.הורד"></script>
+        <script src="./Timerf_files/jquery.countdown.js.הורד"></script>
+        <script src="./Timerf_files/circle-progress.js.הורד"></script>
+    
+<!--[if gte mso 9]><![endif]-->
+</head>
+<body>
+    <div class="timer">
+        <div class="agats"></div>
+        <div class="curTime"></div>
+		<div class="znet"></div>
+        <div class="timer_title">שעון עצר לישיבות  </div>
+        <span class="hariga" style="display: none">חריגה</span>
+        <br><br>
+        <div class="meeting_title">
+	  <span style="
+		display: inline-block;
+	">נושא הישיבה:</span>
+	  <input type="text" class="form-control subject mainSubject" style="width: 415px; display: inline-block; padding: 0.2rem 0.75rem; font-size: 10pt; border-radius: 15px; background-color: lightcoral;">
+	</div>
+        <div class="table_wrapper">
+        <form class="timer_form">
+            <table id="pre_timer">
+                <thead>
+                <tr>
+            <th></th>             
+  <th>מציג</th>             <th>נושא</th>
+                    <th>משך בדקות</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td>
+                        <i class="fa fa-trash-o" aria-hidden="true"></i>
+                    </td>
+          <td>
+                        <input type="text" class="form-control present" style="background-color: white;">
+                    </td>           <td>
+                        <input type="text" class="form-control subject" style="background-color: white;">
+                    </td>
+                    <td>
+                        <input type="text" class="form-control hour" style="background-color: white;">
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <i class="fa fa-trash-o" aria-hidden="true"></i>
+                    </td>
+         <td>
+                        <input type="text" class="form-control present" style="background-color: white;">
+                    </td>           <td>
+                        <input type="text" class="form-control subject" style="background-color: white;">
+                    </td>
+                    <td>
+                        <input type="text" class="form-control hour" style="background-color: white;">
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <i class="fa fa-trash-o" aria-hidden="true"></i>
+                    </td>
+          <td>
+                        <input type="text" class="form-control present" style="background-color: white;">
+                    </td>          <td>
+                        <input type="text" class="form-control subject" style="background-color: white;">
+                    </td>
+                    <td>
+                        <input type="text" class="form-control hour" style="background-color: white;">
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <i class="fa fa-trash-o" aria-hidden="true"></i>
+                    </td>
+         <td>
+                        <input type="text" class="form-control present" style="background-color: white;">
+                    </td>           <td>
+                        <input type="text" class="form-control subject" style="background-color: white;">
+                    </td>
+                    <td>
+                        <input type="text" class="form-control hour" style="background-color: white;">
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <i class="fa fa-trash-o" aria-hidden="true"></i>
+                    </td>
+          <td>
+                        <input type="text" class="form-control present" style="background-color: white;">
+                    </td>          <td>
+                        <input type="text" class="form-control subject" style="background-color: white;">
+                    </td>
+                    <td>
+                        <input type="text" class="form-control hour" style="background-color: white;">
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+
+        </form>
+            <div class="button_panel">
+                <div class="right_panel">
+                    <div class="timer_button add"><i class="fa fa-plus-circle" aria-hidden="true"></i>הוסף נושא</div>
+               </div>
+                <div class="left_panel">
+                    <div id="timer_button_clean" class="timer_button clean" style="margin-right: 0px;"><i class="fa fa-stop-circle" aria-hidden="true"></i>נקה</div>
+                     <div id="timer_button_play" class="timer_button play" style="margin-right: 10px;"><i class="fa fa-play-circle" aria-hidden="true"></i>התחל</div>
+               </div>
+            </div>
+        </div>
+        <div id="real_time_timer" style="display: none">
+            <div class="timer_subjects">
+            <ul class="subjects">
+            </ul>
+            </div>
+            <div class="running_timer">
+                <div id="timer2"></div>
+                <div id="circle"><canvas width="400" height="400"></canvas></div>
+            </div>
+			
+			<div>
+			
+				<div id="timer"></div>
+				<div class="button_panel">
+					<div class="right_panel">
+						<div class="timer_button back"><i class="fa fa-arrow-circle-right" aria-hidden="true"></i>חזור</div>
+					</div>
+					<div class="left_panel" style="float: left;">
+						<div class="download_ppt"></div>
+						<div class="timer_button skip">דלג להבא<i class="fa fa-arrow-circle-left skip-icon" aria-hidden="true"></i></div>
+						<div class="timer_button toggle">השהה<i class="fa fa-pause-circle toggle-icon" aria-hidden="true"></i></div>
+					</div>
+				</div>
+				
+			</div>
+			
+        </div>
+    </div>
+
+
+</body></html>
